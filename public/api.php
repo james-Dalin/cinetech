@@ -15,7 +15,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'OPTIONS') {
 // ========== RESTE DU CODE ==========
 
 try {
-    
+    require_once __DIR__ .'/../app/models/User.php';
+    require_once __DIR__ .'/../app/models/Comment.php';
+    require_once __DIR__ .'/../app/controllers/AuthController.php';
+    require_once __DIR__ .'/../app/controllers/CommentController.php';
     require_once __DIR__ . '/../app/config/tmdb.php';
     require_once __DIR__ . '/../app/config/Database.php';
     require_once __DIR__ . '/../app/models/TmdbApiClient.php';
