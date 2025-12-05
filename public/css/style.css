@@ -91,6 +91,10 @@ body {
     background-color: #c40812;
 }
 
+#a_title {
+    text-decoration: none;
+}
+
 /* Toggle Films/Séries */
 .toggle-container {
     display: flex;

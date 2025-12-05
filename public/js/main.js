@@ -5,17 +5,17 @@
 
 // ========== CONFIGURATION ==========
 
-const API_BASE_URL = 'https://localhost/cinetech/public/api.php';
+const API_BASE_URL = 'http://localhost/cinetech/public/api.php';
 const TMDB_IMAGE_BASE = 'https://image.tmdb.org/t/p/w500';
 
 // ========== STATE ==========
 
 let currentState = {
-  type: 'movie',
-  currentPage: 1,
-  totalPages: 1,
-  searchQuery: '',
-  isSearching: false
+    type: 'movie',           // 'movie' ou 'tv'
+    currentPage: 1,
+    totalPages: 1,
+    searchQuery: '',
+    isSearching: false
 };
 
 // ========== DOM ELEMENTS ==========
@@ -33,54 +33,54 @@ const modalBody = document.getElementById('modalBody');
 
 // ========== EVENT LISTENERS ==========
 
-//BOUTON RECHERCHE
+// Search
 searchBtn.addEventListener('click', handleSearch);
 searchInput.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') handleSearch();
+    if (e.key === 'Enter') handleSearch();
 });
 
-// CHANGER FILMS/SERIES
+// Toggle Films/Séries
 toggleBtns.forEach(btn => {
-  btn.addEventListener('click', (e) => {
-    toggleBtns.forEach(b => b.classList.remove('active'));
-    e.target.classList.add('active');
-
-    currentState.type = e.target.dataset.type;
-    currentState.currentPage = 1;
-    currentState.isSearching = false;
-    currentState.searchQuery = '';
-    searchInput.value = '';
-
-    loadMovies();
-  });
+    btn.addEventListener('click', (e) => {
+        toggleBtns.forEach(b => b.classList.remove('active'));
+        e.target.classList.add('active');
+        
+        currentState.type = e.target.dataset.type;
+        currentState.currentPage = 1;
+        currentState.isSearching = false;
+        currentState.searchQuery = '';
+        searchInput.value = '';
+        
+        loadMovies();
+    });
 });
 
 // Pagination
 prevBtn.addEventListener('click', () => {
-  if (currentState.currentPage > 1) {
-      currentState.currentPage--;
-      loadMovies();
-      window.scrollTo({ top: 0, behavior: 'smooth'});
-  }
+    if (currentState.currentPage > 1) {
+        currentState.currentPage--;
+        loadMovies();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 });
 
 nextBtn.addEventListener('click', () => {
-  if (currentState.currentPage < currentState.totalPages) {
-      currentState.currentPage++;
-      loadMovies();
-      window.scrollTo({ top:0, behavior: 'smooth'});
-  }
+    if (currentState.currentPage < currentState.totalPages) {
+        currentState.currentPage++;
+        loadMovies();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
 });
 
 // Modal
 modalClose.addEventListener('click', () => {
-  movieModal.classList.remove('active');
+    movieModal.classList.remove('active');
 });
 
 movieModal.addEventListener('click', (e) => {
-  if (e.target === movieModal) {
-    movieModal.classList.remove('active');
-  }
+    if (e.target === movieModal) {
+        movieModal.classList.remove('active');
+    }
 });
 
 // ========== FUNCTIONS ==========
@@ -143,97 +143,95 @@ function displayMovies(movies) {
 }
 
 /**
- * Affiche les films dans la grille
- */
-function displayMovies(movies) {
-  moviesGrid.innerHTML = '';
-
-  movies.forEach(movie => {
-    const card = createMovieCard(movie);
-    moviesGrid.appendChild(card);
-  });
-}
-
-/**
  * Crée une carte de film
  */
 function createMovieCard(movie) {
-  const isMovie = currentState.type === "movie";
-  const title = isMovie ? movie.title : movie.name;
-  const releaseDate = isMovie ? movie.release_date : movie.first_air_date;
-  const posterPath = movie.poster_path;
+    const isMovie = currentState.type === 'movie';
+    const title = isMovie ? movie.title : movie.name;
+    const releaseDate = isMovie ? movie.release_date : movie.first_air_date;
+    const posterPath = movie.poster_path;
 
-  const card = document.createElement('div');
-  card.className = 'movie-card';
+    const card = document.createElement('div');
+    card.className = 'movie-card';
+    
+    card.innerHTML = `
+        <img 
+            src="${posterPath ? TMDB_IMAGE_BASE + posterPath : 'https://via.placeholder.com/200x300?text=No+Image'}" 
+            alt="${title}" 
+            class="movie-poster"
+        >
+        <div class="movie-info">
+            <div class="movie-title" title="${title}">${title}</div>
+            <div class="movie-meta">
+                <span>${releaseDate ? releaseDate.split('-')[0] : 'N/A'}</span>
+                <div class="movie-rating">⭐ ${movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A'}</div>
+            </div>
+        </div>
+    `;
 
-  card.innerHTML = `
-      <img src="${posterPath ? TMDB_IMAGE_BASE + posterPath : 'https://via.placeholder.com/200x300?text=No+Image'}"alt=${title}"class="movie-poster">
-      <div class="movie-info">
-        <div class="movie-title" title="${title}">${title}</div>
-        <div class="movie-meta">
-          <span>${releaseDate ? releaseDate.split('-')[0] : 'N/A'}</span>
-        <div class="movie-rating">⭐ ${movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A'} </div>
-          </div>
-        </div>`;
+    card.addEventListener('click', () => showMovieDetails(movie));
 
-        card.addEventListener('click', () => showMovieDetails(movie));
-
-        return card;
+    return card;
 }
 
 /**
  * Affiche les détails d'un film dans une modal
  */
 function showMovieDetails(movie) {
-  const isMovie = currentState.type === 'movie';
-  const title = isMovie ? movie.title : movie.name;
-  const releaseDate = isMovie ? movie.release_date : movie.first_air_date;
-  const posterPath = movie.poster_path;
-  const overview = movie.overview;
-  const rating = movie.vote_average;
+    const isMovie = currentState.type === 'movie';
+    const title = isMovie ? movie.title : movie.name;
+    const releaseDate = isMovie ? movie.release_date : movie.first_air_date;
+    const posterPath = movie.poster_path;
+    const overview = movie.overview;
+    const rating = movie.vote_average;
 
-  modalBody.innerHTML = `
-      <img src="${posterPath ? TMDB_IMAGE_BASE + posterPath : 'https://via.placeholder.com/600x400?text=No+Image'}"alt="${title}"class="modal-poster">
-      <h2 class="modal-title">${title}</h2>
-      <div class="modal-meta">
-          <span>📅 ${releaseDate || 'N/A'}</span>
-          <span>⭐ ${rating ? rating.toFixed(1) : 'N/A'}/10/</span>
-          <span>👁️ ${movie.popularity ? Math.round(movie.popularity) : 'N/A'} vues</span>
-          </div>
-          <div class="modal-overview">
-               <strong>Synonpsis:</strong>
-               <p>${overview || 'Pas de description disponible'}</p>
-          </div>`;
+    modalBody.innerHTML = `
+        <img 
+            src="${posterPath ? TMDB_IMAGE_BASE + posterPath : 'https://via.placeholder.com/600x400?text=No+Image'}" 
+            alt="${title}" 
+            class="modal-poster"
+        >
+        <h2 class="modal-title">${title}</h2>
+        <div class="modal-meta">
+            <span>📅 ${releaseDate || 'N/A'}</span>
+            <span>⭐ ${rating ? rating.toFixed(1) : 'N/A'}/10</span>
+            <span>👁️ ${movie.popularity ? Math.round(movie.popularity) : 'N/A'} vues</span>
+        </div>
+        <div class="modal-overview">
+            <strong>Synopsis:</strong>
+            <p>${overview || 'Pas de description disponible'}</p>
+        </div>
+    `;
 
-        movieModal.classList.add('active');
+    movieModal.classList.add('active');
 }
 
 /**
  * Met à jour les boutons de pagination
  */
 function updatePagination() {
-  pageInfo.textContent = `Page ${currentState.currentPage} / ${currentState.totalPages}`;
-
-  prevBtn.disabled = currentState.currentPage <= 1;
-  nextBtn.disabled = currentState.currentPage >= currentState.totalPages;
+    pageInfo.textContent = `Page ${currentState.currentPage} / ${currentState.totalPages}`;
+    
+    prevBtn.disabled = currentState.currentPage <= 1;
+    nextBtn.disabled = currentState.currentPage >= currentState.totalPages;
 }
 
 /**
  * Gère la recherche
  */
 function handleSearch() {
-  const query = searchInput.value.trim();
+    const query = searchInput.value.trim();
 
-  if (!query) {
-    alert('Veuillez entrer un terme de recherche');
-    return;
-  }
+    if (!query) {
+        alert('Veuillez entrer un terme de recherche');
+        return;
+    }
 
-  currentState.searchQuery = query;
-  currentState.isSearching = true;
-  currentState.currentPage = 1;
+    currentState.searchQuery = query;
+    currentState.isSearching = true;
+    currentState.currentPage = 1;
 
-  loadMovies();
+    loadMovies();
 }
 
 // ========== INIT ==========
