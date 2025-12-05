@@ -168,3 +168,40 @@ function createMovieCard(movie) {
 
         return card;
 }
+
+/**
+ * Affiche les détails d'un film dans une modal
+ */
+function showMovieDetails(movie) {
+  const isMovie = currentState.type === 'movie';
+  const title = isMovie ? movie.title : movie.name;
+  const releaseDate = isMovie ? movie.release_date : movie.first_air_date;
+  const posterPath = movie.poster_path;
+  const overview = movie.overview;
+  const rating = movie.vote_average;
+
+  modalBody.innerHTML = `
+      <img src="${posterPath ? TMDB_IMAGE_BASE + posterPath : 'https://via.placeholder.com/600x400?text=No+Image'}"alt="${title}"class="modal-poster">
+      <h2 class="modal-title">${title}</h2>
+      <div class="modal-meta">
+          <span>📅 ${releaseDate || 'N/A'}</span>
+          <span>⭐ ${rating ? rating.toFixed(1) : 'N/A'}/10/</span>
+          <span>👁️ ${movie.popularity ? Math.round(movie.popularity) : 'N/A'} vues</span>
+          </div>
+          <div class="modal-overview">
+               <strong>Synonpsis:</strong>
+               <p>${overview || 'Pas de description disponible'}</p>
+          </div>`;
+
+        movieModal.classList.add('active');
+}
+
+/**
+ * Met à jour les boutons de pagination
+ */
+function updatePagination() {
+  pageInfo.textContent = `Page ${currentState.currentPage} / ${currentState.totalPages}`;
+
+  prevBtn.disabled = currentState.currentPage <= 1;
+  nextBtn.disabled = currentState.currentPage >= currentState.totalPages;
+}
