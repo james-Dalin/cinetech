@@ -27,6 +27,13 @@
 
                 <!-- Toggle Films/Séries -->
                 <div class="toggle-container">
+                    <div class="user-container">
+                        <button id="authBtn" class="btn btn-primary">Connexion</button>
+                        <div id="userMenu" class="user-menu" style="display: none;">
+                            <span id="usernameDisplay"></span>
+                            <button id="logoutBtn" class="btn btn-secondary">Déconnexion</button>
+                        </div>
+                    </div>
                     <button class="toggle-btn active" data-type="movie">Films</button>
                     <button class="toggle-btn" data-type="tv">Séries</button>
                 </div>
@@ -66,6 +73,34 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal d'authentification -->
+     <div id="authModal" class="modal">
+        <div class="modal-content auth-modal-content">
+            <span class="modal-close auth-modal-close">&times;</span>
+
+            <!-- Formulaire de connexion -->
+             <div id="loginForm">
+                <h3>Connexion</h3>
+                <input type="text" id="loginUsername" placeholder="Username" required>
+                <input type="password" id="loginPassowrd" placeholder="Mot de passe" required>
+                <button  id="loginBtn" class="btn btn-primary">Se connecter</button>
+                <p>Pas de compte ? <a href="#" id="showRegister">S'enregistrer</a></p>
+             </div>
+
+             <!-- Formulaire d'Enregistrement -->
+              <div id="registerForm" style="display: none;">
+                <h3>S'enregistrer</h3>
+                <input type="text" id="registerUsername" placeholder="Username" required>
+                <input type="email" id="registerEmail" placeholder="Email" required>
+                <input type="password" id="registerPassword" placeholder="Mot de passe" required>
+                <button id="registerBtn" class="btn btn-primary">S'enregistrer</button>
+                <p>Déjà un compte ? <a href="#" id="showLogin">Se connecter</a></p>
+              </div>
+
+              <div id="authMessage" class="auth-message"></div>
+        </div>
+     </div>
 
     <!-- Footer -->
     <footer class="footer">
