@@ -67,6 +67,32 @@ try {
             $response = $seriesController->getSimilarSeries();
             break;
 
+        case 'search':
+            $query = isset($_GET['query']) ? $_GET['query']: '';
+            $type = isset($_GET['type']) ? $_GET['type'] :'multi';
+            $page = isset($_GET['page']) ? $_GET['page'] : 1;
+
+                if (strlen($query) < 2) {
+                    $response = [
+                        'success' => false,
+                        'error' => 'Recherche trop courte'
+                    ];
+                    break;
+                }
+
+                // Utilise directement le Model (Movie ou Series)
+                if ($type === 'tv') {
+                    $result = $seriesModel->search($query, $page);
+                } else {
+                    $result = $movieModel->search($query, $page);
+                }
+
+                $response = [
+                    'success' => $result !== false,
+                    'data' => $result
+                ];
+                break;
+
         default:
             http_response_code(400);
             $response = [
