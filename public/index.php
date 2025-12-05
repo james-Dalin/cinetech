@@ -48,9 +48,9 @@
      <div class="pagination-container">
       <div class="container">
         <div class="pagination">
-          <button id="prevBtn" class="pagination-btn"><- Pécédent</button>
+          <button id="prevBtn" class="pagination-btn">← Pécédent</button>
           <span id="pageInfo" class="page-info">Page 1</span>
-          <button id="nextBtn" class="pagination-btn">Suivant -></button>
+          <button id="nextBtn" class="pagination-btn">Suivant →</button>
         </div>
       </div>
      </div>

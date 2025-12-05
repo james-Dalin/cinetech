@@ -23,8 +23,8 @@ let currentState = {
 const moviesGrid = document.getElementById('moviesGrid');
 const searchInput = document.getElementById('searchInput');
 const searchBtn = document.getElementById('searchBtn');
-const toggleBtns = document.getElementById('toggle-btn');
-const prevBtn = document.getElementsById('prevBtn');
+const toggleBtns = document.querySelectorAll('.toggle-btn');
+const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementsById('nextBtn');
 const pageInfo = document.getElementById('pageInfo');
 const movieModal = document.getElementById('movieModal');
@@ -134,5 +134,37 @@ async function loadMovies() {
  * Affiche les films dans la grille
  */
 function displayMovies(movies) {
-  
+  moviesGrid.innerHTML = '';
+
+  movies.forEach(movie => {
+    const card = createMovieCard(movie);
+    moviesGrid.appendChild(card);
+  });
+}
+
+/**
+ * Crée une carte de film
+ */
+function createMovieCard(movie) {
+  const isMovie = currentState.type === "movie";
+  const title = isMovie ? movie.title : movie.name;
+  const releaseDate = isMovie ? movie.release_date : movie.first_air_date;
+  const posterPath = movie.poster_path;
+
+  const card = document.createElement('div');
+  card.className = 'movie-card';
+
+  card.innerHTML = `
+      <img src="${posterPath ? TMDB_IMAGE_BASE + posterPath : 'https://via.placeholder.com/200x300?text=No+Image'}"alt=${title}"class="movie-poster">
+      <div class="movie-info">
+        <div class="movie-title" title="${title}">${title}</div>
+        <div class="movie-meta">
+          <span>${releaseDate ? releaseDate.split('-')[0] : 'N/A'}</span>
+        <div class="movie-rating">⭐ ${movie.vote_average ? movie.vote_average.toFixed(1) : 'N/A'} </div>
+          </div>
+        </div>`;
+
+        card.addEventListener('click', () => showMovieDetails(movie));
+
+        return card;
 }
