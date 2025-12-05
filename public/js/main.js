@@ -20,10 +20,10 @@ let currentState = {
 
 // ========== DOM ELEMENTS ==========
 
-const moviesGird = document.getElementById('moviesGrid');
+const moviesGrid = document.getElementById('moviesGrid');
 const searchInput = document.getElementById('searchInput');
 const searchBtn = document.getElementById('searchBtn');
-const toggleBtn = document.getElementById('toggle-btn');
+const toggleBtns = document.getElementById('toggle-btn');
 const prevBtn = document.getElementsById('prevBtn');
 const nextBtn = document.getElementsById('nextBtn');
 const pageInfo = document.getElementById('pageInfo');
@@ -45,7 +45,7 @@ toggleBtns.forEach(btn => {
     toggleBtns.forEach(b => b.classList.remove('active'));
     e.target.classList.add('active');
 
-    currentState.type = e.target.datatest.type;
+    currentState.type = e.target.dataset.type;
     currentState.currentPage = 1;
     currentState.isSearching = false;
     currentState.searchQuery = '';
@@ -73,8 +73,66 @@ nextBtn.addEventListener('click', () => {
 });
 
 // Modal
-modalClose.addEventListener('click', (e) => {
+modalClose.addEventListener('click', () => {
+  movieModal.classList.remove('active');
+});
+
+movieModal.addEventListener('click', (e) => {
   if (e.target === movieModal) {
     movieModal.classList.remove('active');
   }
 });
+
+// ========== FUNCTIONS ==========
+
+/**
+ * Récupère les films depuis l'API
+ */
+async function loadMovies() {
+  try {
+    moviesGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Chargement...</p>';
+  
+    let action;
+    if (currentState.isSearching) {
+      action = 'search';
+    } else {
+      action = currentState.type === 'movie' ? 'getPopularMovies' : 'getPopularSeries';
+    }
+
+    const params = new URLSearchParams({
+      action: action,
+      page: currentState.currentPage
+    });
+
+    if (currentState.isSearching) {
+      params.append('query', currentState.searchQuery);
+      params.append('type', currentState.type);
+    }
+
+    const response = await fetch(`${API_BASE_URL}?${params}`);
+    const data = await response.json();
+
+    if (!data.success || !data.data || !data.data.results) {
+      moviesGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">Aucun résultat trouvé.</p>';
+      return;
+    }
+
+    // Affiche les films
+    displayMovies(data.data.results);
+
+    // Met à jour la pagination
+    currentState.totalPages = data.data.total_pages || 1;
+    updatePagination();
+
+  } catch (error) {
+    console.error('Erreur:', error);
+    moviesGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: red;">Erreur lors du chargement..</p>';
+  }
+}
+
+/**
+ * Affiche les films dans la grille
+ */
+function displayMovies(movies) {
+  
+}
