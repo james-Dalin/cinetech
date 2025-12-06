@@ -140,4 +140,53 @@ document.addEventListener('DOMContentLoaded', () => {
     authMessage.style.color = 'red';
   }
  });
-})
+
+ // Déconnexion
+ async function handleLogout() {
+  try {
+    const response = await fetch(`${API_BASE_URL}?action=logout`, {
+      method: 'POST'
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      updateUserUI(null);
+    }
+  } catch (error) {
+    console.error('Erreur Logout:', error);
+  }
+ }
+
+    // ========== UI UPDATE ==========
+
+    function updateUserUI(username) {
+      if (username) {
+        authBtn.style.display = 'none';
+        userMenu.style.display = 'flex';
+        usernameDisplay.textContent = `Bonjour, ${username}`;
+      } else {
+        authBtn.style.display = 'none';
+        userMenu.style.display = 'none';
+        usernameDisplay.textContent = '';
+      }
+    }
+
+    // ========== CHECK LOGIN ON LOAD ==========
+    async function checkLoginStatus() {
+      try {
+        const response = await fetch(`${API_BASE_URL}?action=getCurrentUser`);
+        const data = await response.json();
+
+        if (data.success && data.user) {
+          updateUserUI(data.user.username);
+        } else {
+          updateUserUI(null);
+        }
+      } catch (error) {
+        console.error('Erreur checkLoginStatus', error)
+      }
+    }
+
+    checkLoginStatus();
+});
