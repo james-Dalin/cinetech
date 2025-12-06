@@ -1,7 +1,5 @@
 <?php
 
-declare(strict_types = 1);
-
 class User {
     
     private $connection;
@@ -31,11 +29,17 @@ class User {
         // Vérifie que l'utilisateur n'existe pas
         $query = "SELECT id FROM users WHERE username = ? OR email = ?";
         $stmt = $this->connection->prepare($query);
+        
+        if (!$stmt) {
+            return ['success' => false, 'error' => 'Erreur DB: ' . $this->connection->error];
+        }
+        
         $stmt->bind_param("ss", $username, $email);
         $stmt->execute();
         $result = $stmt->get_result();
 
         if ($result->num_rows > 0) {
+            $stmt->close();
             return ['success' => false, 'error' => 'Username ou email déjà utilisé'];
         }
 
@@ -47,6 +51,11 @@ class User {
         // Insère l'utilisateur
         $query = "INSERT INTO users (username, email, password_hash) VALUES (?, ?, ?)";
         $stmt = $this->connection->prepare($query);
+        
+        if (!$stmt) {
+            return ['success' => false, 'error' => 'Erreur DB: ' . $this->connection->error];
+        }
+        
         $stmt->bind_param("sss", $username, $email, $passwordHash);
 
         if ($stmt->execute()) {
@@ -60,7 +69,7 @@ class User {
             ];
         } else {
             $stmt->close();
-            return ['success' => false, 'error' => 'Erreur lors de la création'];
+            return ['success' => false, 'error' => 'Erreur: ' . $this->connection->error];
         }
     }
 
@@ -77,6 +86,11 @@ class User {
         // Récupère l'utilisateur
         $query = "SELECT id, username, email, password_hash FROM users WHERE username = ?";
         $stmt = $this->connection->prepare($query);
+        
+        if (!$stmt) {
+            return ['success' => false, 'error' => 'Erreur DB: ' . $this->connection->error];
+        }
+        
         $stmt->bind_param("s", $username);
         $stmt->execute();
         $result = $stmt->get_result();
