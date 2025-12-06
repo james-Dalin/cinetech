@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', () => {
  // ========== ACTIONS ==========
 
  // Register
- document.getElementById('registerBtn').addEventListener('click', async() => {
+ document.getElementById('registerBtn').addEventListener('click', async () => {
   
   const username = document.getElementById('registerUsername').value;
   const email = document.getElementById('registerEmail').value;
@@ -76,8 +76,68 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const formData = new FormData();
-  formData
-  formData
-  formData
- })
+  formData.append('username', username);
+  formData.append('email', email);
+  formData.append('password', password);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}?action=register`, {
+      method: 'POST',
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      authMessage.textContent = 'Enregistrement réussi ! Veuillez vous connecter.';
+      authMessage.style.color = 'green';
+      showLogin().click(); // Change vers le login
+    } else {
+      authMessage.textContent = data.error || 'Erreur lors de l\'enregistrement';
+      authMessage.style.color = 'red';
+    }
+  } catch (error) {
+    console.error('Erreur Register:', error);
+    authMessage.textContent = 'Erreur réseau';
+    authMessage.style.color = 'red';
+  }
+ });
+
+ // login
+ document.getElementById('loginBtn').addEventListener('click', async () => {
+  
+  const username = document.getElementById('loginUsername').value;
+  const password = document.getElementById('loginPassword').value;
+
+  if (!username || !password) {
+    authMessage.textContent = 'Username et mot de passe requis';
+    authMessage.style.color = 'red';
+    return;
+  }
+
+  const formData = new FormData();
+  formData.append('username', username);
+  formData.append('password', password);
+
+  try {
+    const response = await fetch(`${API_BASE_URL}?action=login`, {
+      method: 'POST',
+      body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.success) {
+      authMessage.classList.remove('active');
+      updateUserUI(data.user.username);
+    } else {
+      authMessage.textContent = data.error || 'Erreur lors de la connexion';
+      authMessage.style.color = 'red';
+    }
+  } catch (error) {
+    console.error('Erreur login:', error);
+    authMessage.textContent = 'Erreur réseau';
+    authMessage.style.color = 'red';
+  }
+ });
 })
